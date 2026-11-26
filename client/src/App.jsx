@@ -4,7 +4,7 @@ import Register from './pages/Register.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import ProtectedRoute from './routes/ProtectedRoute.jsx';
 import SubmitComplaint from './pages/SubmitComplaint.jsx';
-
+import ComplaintDetail from './pages/ComplaintDetail.jsx';
 
 function App() {
   return (
@@ -28,6 +28,15 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/complaints/:id"
+          element={
+            <ProtectedRoute>
+              <ComplaintDetail />
+            </ProtectedRoute>
+          }
+        />
+      
       </Routes>
     </BrowserRouter>
   );

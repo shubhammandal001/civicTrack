@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {Link, useNavigate } from 'react-router-dom';
 import api, { FILE_BASE_URL } from '../services/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import StatusBadge from '../components/StatusBadge.jsx';
@@ -125,7 +125,9 @@ export default function OfficerDashboard() {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-semibold text-gray-800 truncate">{c.title}</h3>
+                    <Link to={`/complaints/${c.id}`} className="block font-semibold text-gray-800 truncate hover:text-blue-600">   
+                            {c.title}
+                    </Link>
                     <StatusBadge status={c.status} />
                   </div>
                   <p className="text-sm text-gray-500">

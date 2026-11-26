@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {Link, useNavigate } from 'react-router-dom';
 import api from '../services/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import StatusBadge from '../components/StatusBadge.jsx';
@@ -101,7 +101,11 @@ export default function AdminDashboard() {
                 {complaints.map((c) => (
                   <tr key={c.id} className="border-t">
                     <td className="px-4 py-3">#{c.id}</td>
-                    <td className="px-4 py-3 font-medium text-gray-800">{c.title}</td>
+                    <td className="px-4 py-3 font-medium">
+                         <Link to={`/complaints/${c.id}`} className="text-gray-800 hover:text-blue-600 hover:underline">
+                                {c.title}
+                         </Link>
+                    </td>   
                     <td className="px-4 py-3">{c.category}</td>
                     <td className="px-4 py-3">{c.citizen_name}</td>
                     <td className="px-4 py-3"><StatusBadge status={c.status} /></td>

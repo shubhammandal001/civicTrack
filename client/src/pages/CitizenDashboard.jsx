@@ -74,10 +74,12 @@ export default function CitizenDashboard() {
               )}
 
               <div className="flex-1 min-w-0">
+                
                 <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-semibold text-gray-800 truncate">{c.title}</h3>
+                  <Link to={`/complaints/${c.id}`} className="block font-semibold text-gray-800 truncate hover:text-blue-600">{c.title}</Link>
                   <StatusBadge status={c.status} />
                 </div>
+
                 <p className="text-sm text-gray-500">
                   {c.category} · {new Date(c.created_at).toLocaleDateString()}
                 </p>
