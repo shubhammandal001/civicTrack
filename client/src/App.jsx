@@ -3,6 +3,8 @@ import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import ProtectedRoute from './routes/ProtectedRoute.jsx';
+import SubmitComplaint from './pages/SubmitComplaint.jsx';
+
 
 function App() {
   return (
@@ -18,6 +20,14 @@ function App() {
             <Dashboard />
           </ProtectedRoute>
           } />
+        <Route
+          path="/complaints/new"
+          element={
+            <ProtectedRoute allowedRoles={['citizen']}>
+                  <SubmitComplaint />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
