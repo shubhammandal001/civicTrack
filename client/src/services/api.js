@@ -12,4 +12,5 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+export const FILE_BASE_URL = import.meta.env.VITE_API_URL.replace(/\/api\?$/, '');
 export default api;
