@@ -7,6 +7,8 @@ import categoryRoutes from './src/routes/categoryRoutes.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import complaintRoutes from './src/routes/complaintRoutes.js';
+import adminRoutes from './src/routes/adminRoutes.js';
+import officerRoutes from './src/routes/officerRoutes.js';
 
 import { protect } from './src/middleware/authMiddleware.js';
 import { upload } from './src/middleware/uploadMiddleware.js';
@@ -37,6 +39,8 @@ const PORT = process.env.PORT || 5000;
 app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/complaints', complaintRoutes);
+app.use('/api/admin',  adminRoutes);
+app.use('/api/officer', officerRoutes);
 
 app.use((err, req, res, next) => {
   res.status(400).json({ message: err.message });

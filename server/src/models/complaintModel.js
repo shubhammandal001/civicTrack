@@ -93,3 +93,94 @@ export const getStatusHistory = async (complaintId) => {
   );
   return rows;
 };
+
+export const getAllComplaints = async () => {
+  const [rows] = await pool.query(
+    `SELECT c.id, c.title, c.status, c.priority, c.created_at,
+            c.assigned_officer_id,
+            cat.name AS category, cat.department_id,
+            u.name AS citizen_name,
+            o.name AS officer_name
+     FROM complaints c
+     JOIN categories cat ON cat.id = c.category_id
+     JOIN users u ON u.id = c.user_id
+     LEFT JOIN users o ON o.id = c.assigned_officer_id
+     ORDER BY c.created_at DESC`
+  );
+  return rows;
+};
+
+export const assignComplaint = async ({ complaintId, officerId, officerName, adminId, oldStatus }) => {
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
+
+    await conn.query(
+      'UPDATE complaints SET assigned_officer_id = ?, status = ? WHERE id = ?',
+      [officerId, 'Assigned', complaintId]
+    );
+
+    await conn.query(
+      `INSERT INTO status_history (complaint_id, old_status, new_status, changed_by, remarks)
+       VALUES (?, ?, ?, ?, ?)`,
+      [complaintId, oldStatus, 'Assigned', adminId, `Assigned to ${officerName}`]
+    );
+
+    await conn.commit();
+  } catch (err) {
+    await conn.rollback();
+    throw err;
+  } finally {
+    conn.release();
+  }
+};
+
+export const getComplaintsByOfficer = async (officerId) => {
+  const [rows] = await pool.query(
+    `SELECT c.id, c.title, c.status, c.priority, c.address,
+            c.latitude, c.longitude, c.created_at, c.updated_at,
+            cat.name AS category,
+            u.name AS citizen_name,
+            (SELECT image_path FROM complaint_images
+              WHERE complaint_id = c.id AND type = 'complaint'
+              ORDER BY id LIMIT 1) AS thumbnail
+     FROM complaints c
+     JOIN categories cat ON cat.id = c.category_id
+     JOIN users u ON u.id = c.user_id
+     WHERE c.assigned_officer_id = ?
+     ORDER BY c.updated_at DESC`,
+    [officerId]
+  );
+  return rows;
+};
+
+export const updateComplaintStatus = async ({
+  complaintId, oldStatus, newStatus, changedBy, remarks, imagePaths,
+}) => {
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
+
+    await conn.query('UPDATE complaints SET status = ? WHERE id = ?', [newStatus, complaintId]);
+
+    await conn.query(
+      `INSERT INTO status_history (complaint_id, old_status, new_status, changed_by, remarks)
+       VALUES (?, ?, ?, ?, ?)`,
+      [complaintId, oldStatus, newStatus, changedBy, remarks || null]
+    );
+
+    for (const imagePath of imagePaths) {
+      await conn.query(
+        'INSERT INTO complaint_images (complaint_id, image_path, type) VALUES (?, ?, ?)',
+        [complaintId, imagePath, 'resolution']
+      );
+    }
+
+    await conn.commit();
+  } catch (err) {
+    await conn.rollback();
+    throw err;
+  } finally {
+    conn.release();
+  }
+};

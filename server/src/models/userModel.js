@@ -20,3 +20,22 @@ export const findUserById = async (id) => {
   );
   return rows[0];
 };
+
+export const getOfficers = async () => {
+  const [rows] = await pool.query(
+    `SELECT u.id, u.name, u.email, u.department_id, d.name AS department
+     FROM users u
+     LEFT JOIN departments d ON d.id = u.department_id
+     WHERE u.role = 'officer'
+     ORDER BY u.name`
+  );
+  return rows;
+};
+
+export const findOfficerById = async (id) => {
+  const [rows] = await pool.query(
+    "SELECT id, name, department_id FROM users WHERE id = ? AND role = 'officer'",
+    [id]
+  );
+  return rows[0];
+};
